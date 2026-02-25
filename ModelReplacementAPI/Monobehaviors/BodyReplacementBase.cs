@@ -702,13 +702,17 @@ namespace ModelReplacement
 
         private int DangerousGetEmoteID(int currentID)
         {
-            TooManyEmotes.UnlockableEmote anim = TooManyEmotes.Patches.PlayerPatcher.GetCurrentlyPlayingEmote(controller);
-            if (anim == null) { return currentID; }
-            if (anim.emoteId == 1) { return -1; }
-            if (anim.emoteId == 2) { return -2; }
-            if (anim.emoteId == 3) { return -3; }
-            return anim.emoteId;
-
+            if (TooManyEmotes.EmoteControllerPlayer.allPlayerEmoteControllers.TryGetValue(controller, out var emote) && emote.IsPerformingCustomEmote())
+            {
+                switch (emote.performingEmote.emoteId)
+                {
+                    case 1: return -1;
+                    case 2: return -2;
+                    case 3: return -3;
+                }
+                return emote.performingEmote.emoteId;
+            }
+            return currentID;
         }
 
         #endregion
